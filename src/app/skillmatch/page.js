@@ -18,7 +18,7 @@ export default function SkillMatch() {
 
         if (result.success) {
           setProfiles(result.data);
-          setFilteredProfiles(result.data); // initial state
+          setFilteredProfiles(result.data);
         } else {
           console.warn(result.message);
         }
@@ -32,15 +32,15 @@ export default function SkillMatch() {
     fetchProfiles();
   }, []);
 
-  // Filter on search or availability
   const applyFilters = () => {
     const lowerSearch = searchTerm.toLowerCase();
 
     const filtered = profiles.filter((profile) => {
-      const skills = [...(profile.skillsOffered || []), ...(profile.skillsWanted || [])]
-        .map((skill) => skill.toLowerCase());
+      const skills = [...(profile.skillsOffered || []), ...(profile.skillsWanted || [])].map(
+        (skill) => skill.toLowerCase()
+      );
 
-      const matchesSkill = skills.some((skill) => skill.includes(lowerSearch));
+      const matchesSkill = lowerSearch === '' || skills.some((skill) => skill.includes(lowerSearch));
       const matchesAvailability = availability === '' || profile.availability === availability;
 
       return matchesSkill && matchesAvailability;
@@ -49,12 +49,31 @@ export default function SkillMatch() {
     setFilteredProfiles(filtered);
   };
 
+  const sendRequest = async (receiverId, receiverName) => {
+    try {
+      const res = await fetch('/api/send-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ receiverId, receiverName }),
+      });
+
+      const result = await res.json();
+      if (result.success) {
+        alert('Request sent successfully!');
+      } else {
+        alert(result.message || 'Failed to send request.');
+      }
+    } catch (err) {
+      console.error('Request Error:', err);
+      alert('Something went wrong.');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#F5EFEB]">
       <Navbar />
 
       <div className="max-w-5xl mx-auto py-10 px-4">
-        {/* Filter and Search */}
         <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
           <select
             value={availability}
@@ -84,7 +103,6 @@ export default function SkillMatch() {
           </div>
         </div>
 
-        {/* Loader */}
         {loading ? (
           <p className="text-center text-[#2F4156]">Loading profiles...</p>
         ) : filteredProfiles.length === 0 ? (
@@ -96,7 +114,6 @@ export default function SkillMatch() {
               className="bg-white p-6 rounded-lg shadow-md mb-6 border border-[#C8D9E6] flex items-center justify-between"
             >
               <div className="flex items-center gap-6">
-                {/* Avatar */}
                 {user.profilePhoto ? (
                   <img
                     src={user.profilePhoto}
@@ -109,7 +126,6 @@ export default function SkillMatch() {
                   </div>
                 )}
 
-                {/* Info */}
                 <div>
                   <h2 className="text-xl font-semibold text-[#2F4156]">{user.fullName}</h2>
                   <p className="text-sm text-[#567C8D] mt-1">
@@ -142,12 +158,12 @@ export default function SkillMatch() {
                 </div>
               </div>
 
-              {/* Rating + Action */}
               <div className="text-right">
-                <p className="text-[#2F4156] text-sm mb-2">
-                  Rating: {user.rating || '0.0'}/5
-                </p>
-                <button className="bg-[#567C8D] text-white px-4 py-2 rounded hover:bg-[#2F4156] transition">
+                <p className="text-[#2F4156] text-sm mb-2">Rating: {user.rating || '0.0'}/5</p>
+                <button
+                  className="bg-[#567C8D] text-white px-4 py-2 rounded hover:bg-[#2F4156] transition"
+                  onClick={() => sendRequest(user._id, user.fullName)}
+                >
                   Request
                 </button>
               </div>

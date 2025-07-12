@@ -1,15 +1,30 @@
 'use client';
+
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+  const router = useRouter();
+
   const handleLogin = () => {
-    console.log('Login:', { email, password });
-    //login logic here
+    if (!email || !password) {
+      setErrorMsg('Please enter both email and password');
+      return;
+    }
+
+    // Simulate authentication (you can replace with real backend API)
+    localStorage.setItem('userEmail', email);
+
+    // Redirect to dashboard or skillmatch page
+    router.push('/skillmatch');
   };
+
   return (
-    <div className="min-h-screen flex flex-col items-center bg-[#C8D9E6] px-4"> 
+    <div className="min-h-screen flex flex-col items-center bg-[#C8D9E6] px-4">
       <div className="w-full flex justify-between items-center mt-6 mb-8 px-6 md:px-12">
         <span className="text-2xl font-bold text-[#2F4156]">SkillSwap</span>
         <Link
@@ -21,7 +36,13 @@ export default function LoginPage() {
       </div>
 
       <div className="bg-white rounded-2xl p-8 mt-10 shadow-xl w-full max-w-md">
-        <h2 className="text-2xl font-bold text-[#2F4156] mb-6 text-center">Login to SkillMatch</h2>
+        <h2 className="text-2xl font-bold text-[#2F4156] mb-6 text-center">
+          Login to SkillMatch
+        </h2>
+
+        {errorMsg && (
+          <p className="text-red-500 text-sm text-center mb-4">{errorMsg}</p>
+        )}
 
         <input
           type="email"
@@ -47,11 +68,15 @@ export default function LoginPage() {
 
         <p className="mt-4 text-center text-sm text-gray-600">
           Don&apos;t have an account?{' '}
-          <Link href="/signup" className="text-[#35607A] hover:underline font-medium">
+          <Link
+            href="/signup"
+            className="text-[#35607A] hover:underline font-medium"
+          >
             Sign up here
           </Link>
         </p>
       </div>
+
       <style jsx>{`
         .input-style {
           width: 100%;

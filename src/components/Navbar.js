@@ -16,6 +16,9 @@ export default function Navbar() {
         <Link href="/signup" className="text-[#567C8D] hover:text-[#2F4156] font-medium transition">
           Login
         </Link>
+        <Link href="/request" className="text-[#567C8D] hover:text-[#2F4156] font-medium transition">
+          Requests
+        </Link>
         <Link href="/profile">
           <UserCircle className="w-7 h-7 text-[#567C8D] hover:text-[#2F4156] transition" />
         </Link>
