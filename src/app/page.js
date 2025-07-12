@@ -2,7 +2,6 @@
 
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
-import ProfileOverview from "@/components/profile-overview";
 import Image from "next/image";
 
 export default function Home() {
@@ -25,9 +24,7 @@ export default function Home() {
         </Link>
       </section>
 
-      <div className="max-w-4xl mx-auto px-6 py-12">
-        <ProfileOverview />
-      </div>
+      
     </div>
   );
 }

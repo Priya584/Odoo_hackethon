@@ -14,28 +14,41 @@ export async function POST(req) {
     const rating = formData.get("rating");
     const skillsWanted = formData.getAll("skillsWanted[]");
     const skillsOffered = formData.getAll("skillsOffered[]");
-    const profilePhoto = formData.get("profilePhoto");
+    const availability = formData.get("availability");
+    const visibility = formData.get("visibility");
+
+    const uploadedFile = formData.get("profilePhoto");
+    const avatarPath = formData.get("avatarPath");
 
     let savedPhotoPath = "";
 
-    // ✅ Save uploaded image if present
-    if (profilePhoto && typeof profilePhoto === "object" && "arrayBuffer" in profilePhoto) {
-      const bytes = await profilePhoto.arrayBuffer();
+    // Handle uploaded file
+    if (uploadedFile && typeof uploadedFile === "object" && "arrayBuffer" in uploadedFile) {
+      // Optional: Validate image type
+      const validTypes = ["image/jpeg", "image/png", "image/webp"];
+      if (!validTypes.includes(uploadedFile.type)) {
+        return NextResponse.json({ success: false, error: "Invalid file type" }, { status: 400 });
+      }
+
+      const bytes = await uploadedFile.arrayBuffer();
       const buffer = Buffer.from(bytes);
 
-      savedPhotoPath = `/uploads/${profilePhoto.name}`; // relative path
-      const filePath = path.join(process.cwd(), "public", "uploads", profilePhoto.name);
+      savedPhotoPath = `/uploads/${uploadedFile.name}`;
+      const filePath = path.join(process.cwd(), "public", "uploads", uploadedFile.name);
       await writeFile(filePath, buffer);
+    } else if (typeof avatarPath === "string") {
+      savedPhotoPath = avatarPath;
     }
 
-    // ✅ Save to DB using Mongoose
     const profile = new Profile({
       fullName,
       email,
       rating,
       skillsWanted,
       skillsOffered,
-      profilePhoto: savedPhotoPath,
+      availability,
+      visibility,
+      profilePhoto: savedPhotoPath || "/avatars/default.jpeg",
     });
 
     await profile.save();

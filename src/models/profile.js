@@ -12,6 +12,7 @@ const ProfileSchema = new mongoose.Schema({
   rating: {
     type: String,
     required: false,
+    default: "0", // ✅ Set default as string "0"
   },
   skillsWanted: {
     type: [String],
@@ -24,6 +25,17 @@ const ProfileSchema = new mongoose.Schema({
   profilePhoto: {
     type: String, // Just the filename or path
     required: false,
+  },
+  availability: {
+    type: String,
+    required: false,
+    default: '',
+  },
+  visibility: {
+    type: String,
+    enum: ['public', 'private'],
+    required: false,
+    default: 'public',
   },
 });
 
